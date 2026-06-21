@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Tickets Database</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="me-2">
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                </svg>
+                <span class="fs-6 fw-bold">Support Console</span>
+            </div>
+
+            <nav class="flex-grow-1">
+                <a href="dashboard.html" class="nav-link-custom">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="ticket_list.html" class="nav-link-custom active">
+                    <i class="fa-solid fa-list-check"></i> Tickets List
+                </a>
+                <a href="create_ticket.html" class="nav-link-custom">
+                    <i class="fa-solid fa-plus-circle"></i> Create Ticket
+                </a>
+                <a href="reports.html" class="nav-link-custom">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Reports
+                </a>
+            </nav>
+
+            <div class="pt-3 border-top border-secondary">
+                <a href="index.html" class="nav-link-custom text-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold text-white mb-1">Tickets Database</h1>
+                    <p class="text-secondary small">Filter, search, and manage ongoing support requests</p>
+                </div>
+                <div class="user-avatar text-white">AA</div>
+            </header>
+
+            <!-- Toolbar / Filters -->
+            <section class="glass-panel p-3 mb-4 d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                <div class="d-flex flex-wrap gap-2 align-items-center flex-grow-1">
+                    <div class="toolbar-search" style="width: 240px;">
+                        <span class="position-absolute ms-3 mt-2 text-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="searchBar" class="form-control form-control-custom" style="padding-left: 36px !important;" placeholder="Search title, description...">
+                    </div>
+                    
+                    <select id="filterCategory" class="toolbar-select">
+                        <option value="all">All Categories</option>
+                        <option value="Hardware Support">Hardware Support</option>
+                        <option value="Software Access">Software Access</option>
+                        <option value="Billing & Invoices">Billing & Invoices</option>
+                    </select>
+
+                    <select id="filterPriority" class="toolbar-select">
+                        <option value="all">All Priorities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+
+                    <select id="filterStatus" class="toolbar-select">
+                        <option value="all">All Statuses</option>
+                        <option value="new">New</option>
+                        <option value="open">Open</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                </div>
+
+                <a href="create_ticket.html" class="btn btn-accent">+ New Ticket</a>
+            </section>
+
+            <!-- Table -->
+            <section class="table-container glass-panel">
+                <div class="table-responsive">
+                    <table class="table table-hover table-dark m-0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Subject</th>
+                                <th>Category</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                                <th>SLA Deadline</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTableBody">
+                            <!-- Injected dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Slide Over Panel Details -->
+    <div class="slide-panel" id="detailPanel">
+        <button class="panel-close-btn" id="closePanelBtn">&times;</button>
+        
+        <div class="detail-header mt-3">
+            <span class="detail-id" id="panelTicketId">INC-102</span>
+            <h2 class="detail-title h4" id="panelTicketTitle">Cannot access VPN US-East Server</h2>
+        </div>
+
+        <div class="detail-body">
+            <!-- Metadata Box -->
+            <div class="detail-meta-box mb-4">
+                <div class="meta-item">
+                    <span class="meta-label">Category</span>
+                    <span class="meta-value" id="panelCategory">Software Access</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Priority</span>
+                    <span class="meta-value" id="panelPriority">High</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Requester</span>
+                    <span class="meta-value" id="panelRequester">John Doe</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Assignee</span>
+                    <span class="meta-value" id="panelAgent">Daniel Developer</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="detail-desc mb-4">
+                <div class="meta-label mb-2">Description</div>
+                <p id="panelDesc">Getting authentication timeouts since my password reset today when connecting to US-East server cluster.</p>
+            </div>
+
+            <!-- Comments Thread -->
+            <div class="comments-section">
+                <div class="meta-label mb-2">Comments & Internal Notes</div>
+                <div class="d-flex flex-column gap-2" id="commentsContainer" style="max-height: 250px; overflow-y: auto;">
+                    <!-- Injected comments -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Composer -->
+        <div class="comment-composer">
+            <div class="mb-3">
+                <textarea id="commentText" class="form-control form-control-custom" rows="2" placeholder="Write a response..."></textarea>
+            </div>
+            <div class="composer-actions">
+                <div class="form-check m-0">
+                    <input class="form-check-input" type="checkbox" id="commentIsInternal">
+                    <label class="form-check-label small text-white-50" for="commentIsInternal">
+                        Internal Private Note
+                    </label>
+                </div>
+                <button class="btn btn-accent btn-sm px-3" id="postCommentBtn">Post Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Render rows dynamically from state
+        function renderTicketTable() {
+            const tableBody = document.getElementById('ticketTableBody');
+            tableBody.innerHTML = '';
+
+            tickets.forEach(ticket => {
+                const slaText = formatSlaDuration(ticket.slaTimeRemaining);
+                const priorityBadge = `badge-priority badge-${ticket.priority}`;
+                
+                let statusClass = 'status-new';
+                if (ticket.status === 'open') statusClass = 'status-open';
+                else if (ticket.status === 'pending') statusClass = 'status-pending';
+                else if (ticket.status === 'resolved') statusClass = 'status-resolved';
+
+                const row = document.createElement('tr');
+                row.className = 'ticket-row-click';
+                row.setAttribute('data-id', ticket.id);
+                row.innerHTML = `
+                    <td>${ticket.id}</td>
+                    <td class="fw-semibold text-white-50">${ticket.title}</td>
+                    <td>${ticket.category}</td>
+                    <td><span class="${priorityBadge}">${ticket.priority}</span></td>
+                    <td><span class="badge badge-status ${statusClass}">${ticket.status}</span></td>
+                    <td><span class="sla-countdown" id="sla-val-${ticket.id}">${slaText}</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Bind click events to open details slide-over panel
+            document.querySelectorAll('.ticket-row-click').forEach(row => {
+                row.addEventListener('click', () => {
+                    const ticketId = row.getAttribute('data-id');
+                    openTicketDetailsPanel(ticketId);
+                });
+            });
+        }
+
+        // Live timer updates
+        function updateSlaTimersInUI() {
+            tickets.forEach(ticket => {
+                const el = document.getElementById(`sla-val-${ticket.id}`);
+                if (el) {
+                    el.textContent = formatSlaDuration(ticket.slaTimeRemaining);
+                }
+            });
+        }
+
+        // Open slide over details panel
+        let activeTicketId = null;
+        function openTicketDetailsPanel(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            if (!ticket) return;
+
+            activeTicketId = ticketId;
+
+            document.getElementById('panelTicketId').textContent = ticket.id;
+            document.getElementById('panelTicketTitle').textContent = ticket.title;
+            document.getElementById('panelCategory').textContent = ticket.category;
+            document.getElementById('panelPriority').textContent = ticket.priority;
+            document.getElementById('panelRequester').textContent = ticket.requester;
+            document.getElementById('panelAgent').textContent = ticket.agent;
+            document.getElementById('panelDesc').textContent = ticket.description;
+
+            renderComments(ticketId);
+
+            document.getElementById('detailPanel').classList.add('open');
+        }
+
+        // Close panel details
+        document.getElementById('closePanelBtn').addEventListener('click', () => {
+            document.getElementById('detailPanel').classList.remove('open');
+            activeTicketId = null;
+        });
+
+        // Render comments list
+        function renderComments(ticketId) {
+            const container = document.getElementById('commentsContainer');
+            container.innerHTML = '';
+
+            const ticketComments = comments[ticketId] || [];
+            ticketComments.forEach(c => {
+                const bubble = document.createElement('div');
+                bubble.className = `comment-bubble mb-2 ${c.isInternal ? 'internal' : ''}`;
+                bubble.innerHTML = `
+                    <div class="comment-header small text-white-50 d-flex justify-content-between">
+                        <strong>${c.author}</strong>
+                        <span>${c.time}</span>
+                    </div>
+                    <p class="m-0 mt-1" style="font-size: 0.85rem;">${c.text}</p>
+                `;
+                container.appendChild(bubble);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Post Comment action
+        document.getElementById('postCommentBtn').addEventListener('click', () => {
+            const textEl = document.getElementById('commentText');
+            const internalEl = document.getElementById('commentIsInternal');
+            const body = textEl.value.trim();
+
+            if (body === '' || !activeTicketId) return;
+
+            if (!comments[activeTicketId]) {
+                comments[activeTicketId] = [];
+            }
+
+            const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const newComment = {
+                author: 'You (Agent)',
+                text: body,
+                time: nowStr,
+                isInternal: internalEl.checked
+            };
+
+            comments[activeTicketId].push(newComment);
+            localStorage.setItem('hd_comments', JSON.stringify(comments));
+
+            renderComments(activeTicketId);
+            textEl.value = '';
+            internalEl.checked = false;
+        });
+
+        // Filters UI table search logic
+        function applyFilters() {
+            const searchVal = document.getElementById('searchBar').value.toLowerCase();
+            const catVal = document.getElementById('filterCategory').value;
+            const priVal = document.getElementById('filterPriority').value;
+            const statVal = document.getElementById('filterStatus').value;
+
+            const rows = document.querySelectorAll('.ticket-row-click');
+
+            rows.forEach(row => {
+                const ticketId = row.getAttribute('data-id');
+                const ticket = tickets.find(t => t.id === ticketId);
+                if (!ticket) return;
+
+                const matchSearch = ticket.title.toLowerCase().includes(searchVal) || ticket.description.toLowerCase().includes(searchVal);
+                const matchCat = (catVal === 'all' || ticket.category === catVal);
+                const matchPri = (priVal === 'all' || ticket.priority === priVal);
+                const matchStat = (statVal === 'all' || ticket.status === statVal);
+
+                if (matchSearch && matchCat && matchPri && matchStat) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Listeners for filters
+        document.getElementById('searchBar').addEventListener('input', applyFilters);
+        document.getElementById('filterCategory').addEventListener('change', applyFilters);
+        document.getElementById('filterPriority').addEventListener('change', applyFilters);
+        document.getElementById('filterStatus').addEventListener('change', applyFilters);
+
+        // Initialize table
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTicketTable();
+        });
+    </script>
+</body>
+</html>

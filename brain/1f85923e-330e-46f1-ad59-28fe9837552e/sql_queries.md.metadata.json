@@ -1,0 +1,5 @@
+{
+  "summary":  "A comprehensive list of 20 production-grade SQL queries for the Help Desk System database. It covers daily intake charts, SLA compliance reports, workload metrics, MTTR performance calculations, audit trails, and data filters with JOINS, GROUP BY, and aggregates.",
+  "updatedAt":  "2026-06-21T04:24:05.092102800Z",
+  "userFacing":  true
+}

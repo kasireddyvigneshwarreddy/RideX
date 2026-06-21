@@ -1,0 +1,5 @@
+{
+  "summary":  "A complete MySQL Database Schema design document for the Help Desk Ticketing and Reporting System. It contains physical schema descriptions, table metadata, relations, indexes, a Mermaid ERD diagram, optimized CREATE TABLE scripts, and realistic sample data inserts.",
+  "updatedAt":  "2026-06-21T04:21:22.215669700Z",
+  "userFacing":  true
+}

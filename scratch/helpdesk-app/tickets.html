@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Tickets Database</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Tickets Page Layout overrides */
+        body {
+            display: block;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: rgba(10, 16, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            z-index: 20;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item.active a, .nav-item a:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 3px 0 0 var(--accent-blue);
+        }
+
+        /* Main Workspace Container */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Section */
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-purple);
+            box-shadow: 0 0 10px var(--accent-purple-glow);
+            background: #1e1b4b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Toolbar / Filter area */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            padding: 16px 24px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+        }
+
+        .filters-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex: 1;
+        }
+
+        .toolbar-search {
+            position: relative;
+            width: 240px;
+        }
+
+        .toolbar-search input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 12px 8px 36px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+        }
+
+        .toolbar-search input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .toolbar-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Database Table styling */
+        .table-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            transition: var(--transition-smooth);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+        }
+
+        /* Priority and Status Badges */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .badge-urgent {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error-color);
+        }
+
+        .badge-high {
+            background: rgba(249, 115, 22, 0.15);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            color: #f97316;
+        }
+
+        .badge-medium {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #3b82f6;
+        }
+
+        .badge-low {
+            background: rgba(148, 163, 184, 0.15);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            color: var(--text-secondary);
+        }
+
+        .badge-status {
+            border-radius: 20px;
+            padding: 4px 12px;
+        }
+
+        .status-new { background: #1e1b4b; color: var(--accent-purple); }
+        .status-open { background: #0c4a6e; color: var(--accent-blue); }
+        .status-pending { background: #3f2c06; color: #fbbf24; }
+        .status-resolved { background: #064e3b; color: var(--success-color); }
+
+        .sla-countdown {
+            font-family: monospace;
+            font-weight: 700;
+            color: var(--error-color);
+        }
+
+        /* Slide-over Detail Panel */
+        .detail-panel {
+            position: fixed;
+            top: 0;
+            right: -550px;
+            width: 500px;
+            height: 100vh;
+            background: rgba(10, 15, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid var(--border-color);
+            z-index: 50;
+            box-shadow: -15px 0 35px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            padding: 32px;
+        }
+
+        .detail-panel.open {
+            transform: translateX(-550px);
+        }
+
+        .panel-close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .panel-close-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .detail-header {
+            margin-top: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-id {
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .detail-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding-right: 8px;
+            margin-bottom: 20px;
+        }
+
+        .detail-meta-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .meta-label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .meta-value {
+            font-weight: 500;
+        }
+
+        .detail-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 20px;
+        }
+
+        /* Comment thread inside panel */
+        .comments-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .comment-bubble {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.9rem;
+        }
+
+        .comment-bubble.internal {
+            background: rgba(251, 191, 36, 0.05);
+            border-color: rgba(251, 191, 36, 0.15);
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        /* Comment input composer */
+        .comment-composer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .comment-composer textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            outline: none;
+            resize: none;
+        }
+
+        .comment-composer textarea:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .composer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient background glows -->
+    <div class="background-glow">
+        <div class="sphere sphere-1"></div>
+        <div class="sphere sphere-2"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                </svg>
+                <span>Help Desk Workspace</span>
+            </div>
+            
+            <nav style="flex: 1;">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="dashboard.html">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="tickets.html">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Tickets List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Analytics
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <section class="workspace-header">
+                <h1 style="font-size: 1.8rem; text-align: left; margin-bottom: 0;">Incident Database</h1>
+                <div class="profile-section">
+                    <div class="user-avatar">AA</div>
+                </div>
+            </section>
+
+            <!-- Toolbar / Filters -->
+            <section class="toolbar">
+                <div class="filters-group">
+                    <div class="toolbar-search">
+                        <input type="text" id="searchBar" placeholder="Search title, desc...">
+                    </div>
+                    
+                    <select id="filterCategory" class="toolbar-select">
+                        <option value="all">All Categories</option>
+                        <option value="hardware">Hardware Support</option>
+                        <option value="software">Software Access</option>
+                        <option value="billing">Billing & Invoices</option>
+                    </select>
+
+                    <select id="filterPriority" class="toolbar-select">
+                        <option value="all">All Priorities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+
+                    <select id="filterStatus" class="toolbar-select">
+                        <option value="all">All Statuses</option>
+                        <option value="new">New</option>
+                        <option value="open">Open</option>
+                        <option value="pending">Pending</option>
+                        <option value="resolved">Resolved</option>
+                    </select>
+                </div>
+
+                <button class="btn-primary" style="width: auto; padding: 10px 20px;" onclick="window.location.href='create-ticket.html'">+ New Ticket</button>
+            </section>
+
+            <!-- Table -->
+            <section class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Subject</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>SLA Deadline</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketTableBody">
+                        <!-- Ticket 1 -->
+                        <tr class="ticket-row" data-id="INC-102" data-category="software" data-priority="high" data-status="open">
+                            <td>#102</td>
+                            <td class="t-subject">Cannot access VPN US-East Server</td>
+                            <td>Software Access</td>
+                            <td><span class="badge badge-high">High</span></td>
+                            <td><span class="badge badge-status status-open">Open</span></td>
+                            <td><span class="sla-countdown" id="sla-102">11m 45s</span></td>
+                        </tr>
+
+                        <!-- Ticket 2 -->
+                        <tr class="ticket-row" data-id="INC-492" data-category="hardware" data-priority="urgent" data-status="new">
+                            <td>#492</td>
+                            <td class="t-subject">Server screen failure at primary cluster</td>
+                            <td>Hardware Support</td>
+                            <td><span class="badge badge-urgent">Urgent</span></td>
+                            <td><span class="badge badge-status status-new">New</span></td>
+                            <td><span class="sla-countdown" id="sla-492">21m 10s</span></td>
+                        </tr>
+
+                        <!-- Ticket 3 -->
+                        <tr class="ticket-row" data-id="INC-301" data-category="billing" data-priority="medium" data-status="pending">
+                            <td>#301</td>
+                            <td class="t-subject">Double subscription charge on INV-8921</td>
+                            <td>Billing & Invoices</td>
+                            <td><span class="badge badge-medium">Medium</span></td>
+                            <td><span class="badge badge-status status-pending">Pending</span></td>
+                            <td><span style="color: var(--text-secondary)">Paused</span></td>
+                        </tr>
+
+                        <!-- Ticket 4 -->
+                        <tr class="ticket-row" data-id="INC-190" data-category="software" data-priority="low" data-status="resolved">
+                            <td>#190</td>
+                            <td class="t-subject">Reset Outlook email password credentials</td>
+                            <td>Software Access</td>
+                            <td><span class="badge badge-low">Low</span></td>
+                            <td><span class="badge badge-status status-resolved">Resolved</span></td>
+                            <td><span style="color: var(--success-color)">Compliant</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Slide-over Detail Panel -->
+    <div class="detail-panel" id="detailPanel">
+        <button class="panel-close-btn" id="closePanelBtn">&times;</button>
+        
+        <div class="detail-header">
+            <span class="detail-id" id="panelTicketId">INC-102</span>
+            <h2 class="detail-title" id="panelTicketTitle">Cannot access VPN US-East Server</h2>
+        </div>
+
+        <div class="detail-body">
+            <!-- Metadata Box -->
+            <div class="detail-meta-box">
+                <div class="meta-item">
+                    <span class="meta-label">Category</span>
+                    <span class="meta-value" id="panelCategory">Software Access</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Priority</span>
+                    <span class="meta-value" id="panelPriority">High</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Requester</span>
+                    <span class="meta-value">John Doe (john.doe@client.com)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Assignee</span>
+                    <span class="meta-value" id="panelAgent">Daniel Developer</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="detail-desc">
+                <div class="meta-label" style="margin-bottom: 8px;">Description</div>
+                <p id="panelDesc">Getting authentication timeouts since my password reset today when connecting to US-East server cluster.</p>
+            </div>
+
+            <!-- Discussion Thread -->
+            <div class="comments-section">
+                <div class="meta-label">Activity & Comments</div>
+                
+                <div class="comments-container" id="commentsContainer">
+                    <!-- Comment 1 -->
+                    <div class="comment-bubble">
+                        <div class="comment-header">
+                            <strong>John Doe (Client)</strong>
+                            <span>08:30 AM</span>
+                        </div>
+                        <p>I verified that my credentials work fine on the main SSO portal page, only VPN times out.</p>
+                    </div>
+
+                    <!-- Comment 2 (Internal Note) -->
+                    <div class="comment-bubble internal">
+                        <div class="comment-header">
+                            <strong>Daniel Developer (Agent)</strong>
+                            <span>09:12 AM (Private Note)</span>
+                        </div>
+                        <p>Checked US-East firewall routes, user IP looks whitelisted. Requesting profile reset check.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comment Composer -->
+        <div class="comment-composer">
+            <textarea id="commentText" rows="3" placeholder="Type a message to customer or write a private note..."></textarea>
+            <div class="composer-actions">
+                <label class="checkbox-container" style="font-size: 0.85rem; margin-bottom: 0;">
+                    <input type="checkbox" id="commentIsInternal">
+                    Internal Private Note
+                </label>
+                <button class="btn-primary" style="width: auto; padding: 8px 16px; font-size: 0.85rem;" id="postCommentBtn">Post Reply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Live SLA Countdowns
+            let time102 = 11 * 60 + 45;
+            let time492 = 21 * 60 + 10;
+            const sla102 = document.getElementById('sla-102');
+            const sla492 = document.getElementById('sla-492');
+
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+            }
+
+            setInterval(() => {
+                if (time102 > 0) { time102--; sla102.textContent = formatTime(time102); }
+                if (time492 > 0) { time492--; sla492.textContent = formatTime(time492); }
+            }, 1000);
+
+            // Filtering Table Logic
+            const searchBar = document.getElementById('searchBar');
+            const filterCategory = document.getElementById('filterCategory');
+            const filterPriority = document.getElementById('filterPriority');
+            const filterStatus = document.getElementById('filterStatus');
+            const rows = document.querySelectorAll('.ticket-row');
+
+            function applyFilters() {
+                const searchVal = searchBar.value.toLowerCase();
+                const catVal = filterCategory.value;
+                const priVal = filterPriority.value;
+                const statVal = filterStatus.value;
+
+                rows.forEach(row => {
+                    const titleText = row.querySelector('.t-subject').textContent.toLowerCase();
+                    const rowCat = row.getAttribute('data-category');
+                    const rowPri = row.getAttribute('data-priority');
+                    const rowStat = row.getAttribute('data-status');
+
+                    const matchSearch = titleText.includes(searchVal);
+                    const matchCat = (catVal === 'all' || rowCat === catVal);
+                    const matchPri = (priVal === 'all' || rowPri === priVal);
+                    const matchStat = (statVal === 'all' || rowStat === statVal);
+
+                    if (matchSearch && matchCat && matchPri && matchStat) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+
+            searchBar.addEventListener('input', applyFilters);
+            filterCategory.addEventListener('change', applyFilters);
+            filterPriority.addEventListener('change', applyFilters);
+            filterStatus.addEventListener('change', applyFilters);
+
+            // Slide-over Details Panel Action
+            const detailPanel = document.getElementById('detailPanel');
+            const closePanelBtn = document.getElementById('closePanelBtn');
+
+            // Ticket Details mockup database
+            const mockTicketDetails = {
+                'INC-102': {
+                    title: "Cannot access VPN US-East Server",
+                    category: "Software Access",
+                    priority: "High",
+                    agent: "Daniel Developer",
+                    desc: "Getting authentication timeouts since my password reset today when connecting to US-East server cluster."
+                },
+                'INC-492': {
+                    title: "Server screen failure at primary cluster",
+                    category: "Hardware Support",
+                    priority: "Urgent",
+                    agent: "Emily Expert",
+                    desc: "Cabinet 4 rack C server monitor shows screen glitching and vertical lines. Requires display inspection."
+                },
+                'INC-301': {
+                    title: "Double subscription charge on INV-8921",
+                    category: "Billing & Invoices",
+                    priority: "Medium",
+                    agent: "Emily Expert",
+                    desc: "Customer reported twin debit card authorizations of $199 on invoice INV-8921. Needs audit and credit write-off."
+                },
+                'INC-190': {
+                    title: "Reset Outlook email password credentials",
+                    category: "Software Access",
+                    priority: "Low",
+                    agent: "Alex Analyst",
+                    desc: "Forgot AD credentials locked out from email on mobile phone and laptop application."
+                }
+            };
+
+            rows.forEach(row => {
+                row.addEventListener('click', () => {
+                    const ticketId = row.getAttribute('data-id');
+                    const details = mockTicketDetails[ticketId];
+
+                    if (details) {
+                        document.getElementById('panelTicketId').textContent = ticketId;
+                        document.getElementById('panelTicketTitle').textContent = details.title;
+                        document.getElementById('panelCategory').textContent = details.category;
+                        document.getElementById('panelPriority').textContent = details.priority;
+                        document.getElementById('panelAgent').textContent = details.agent;
+                        document.getElementById('panelDesc').textContent = details.desc;
+                        
+                        // Clear mock comments and reset comments to default
+                        const commentsContainer = document.getElementById('commentsContainer');
+                        if (ticketId === 'INC-102') {
+                            commentsContainer.innerHTML = `
+                                <div class="comment-bubble">
+                                    <div class="comment-header">
+                                        <strong>John Doe (Client)</strong>
+                                        <span>08:30 AM</span>
+                                    </div>
+                                    <p>I verified that my credentials work fine on the main SSO portal page, only VPN times out.</p>
+                                </div>
+                                <div class="comment-bubble internal">
+                                    <div class="comment-header">
+                                        <strong>Daniel Developer (Agent)</strong>
+                                        <span>09:12 AM (Private Note)</span>
+                                    </div>
+                                    <p>Checked US-East firewall routes, user IP looks whitelisted. Requesting profile reset check.</p>
+                                </div>
+                            `;
+                        } else {
+                            commentsContainer.innerHTML = `
+                                <div class="comment-bubble">
+                                    <div class="comment-header">
+                                        <strong>System Agent</strong>
+                                        <span>Yesterday</span>
+                                    </div>
+                                    <p>Ticket created from inbox parser queue. Applied default priority status calculations.</p>
+                                </div>
+                            `;
+                        }
+
+                        detailPanel.classList.add('open');
+                    }
+                });
+            });
+
+            closePanelBtn.addEventListener('click', () => {
+                detailPanel.classList.remove('open');
+            });
+
+            // Post comment simulation
+            const postCommentBtn = document.getElementById('postCommentBtn');
+            const commentText = document.getElementById('commentText');
+            const commentIsInternal = document.getElementById('commentIsInternal');
+            const commentsContainer = document.getElementById('commentsContainer');
+
+            postCommentBtn.addEventListener('click', () => {
+                const bodyText = commentText.value.trim();
+                if (bodyText === '') return;
+
+                const isInternalVal = commentIsInternal.checked;
+                const newComment = document.createElement('div');
+                newComment.className = `comment-bubble ${isInternalVal ? 'internal' : ''}`;
+                
+                const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                newComment.innerHTML = `
+                    <div class="comment-header">
+                        <strong>You (Agent)</strong>
+                        <span>${nowStr} ${isInternalVal ? '(Private Note)' : ''}</span>
+                    </div>
+                    <p>${bodyText}</p>
+                `;
+
+                commentsContainer.appendChild(newComment);
+                commentText.value = '';
+                commentIsInternal.checked = false;
+                commentsContainer.scrollTop = commentsContainer.scrollHeight;
+            });
+        });
+    </script>
+</body>
+</html>

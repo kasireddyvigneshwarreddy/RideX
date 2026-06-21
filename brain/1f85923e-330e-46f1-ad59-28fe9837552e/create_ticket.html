@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Create Ticket</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dropzone {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent-blue);
+            background: rgba(15, 23, 42, 0.7);
+            box-shadow: 0 0 12px rgba(0, 210, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="me-2">
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                </svg>
+                <span class="fs-6 fw-bold">Support Console</span>
+            </div>
+
+            <nav class="flex-grow-1">
+                <a href="dashboard.html" class="nav-link-custom">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="ticket_list.html" class="nav-link-custom">
+                    <i class="fa-solid fa-list-check"></i> Tickets List
+                </a>
+                <a href="create_ticket.html" class="nav-link-custom active">
+                    <i class="fa-solid fa-plus-circle"></i> Create Ticket
+                </a>
+                <a href="reports.html" class="nav-link-custom">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Reports
+                </a>
+            </nav>
+
+            <div class="pt-3 border-top border-secondary">
+                <a href="index.html" class="nav-link-custom text-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold text-white mb-1">Create incident</h1>
+                    <p class="text-secondary small">Initiate a support request ticket in the system</p>
+                </div>
+                <div class="user-avatar text-white">AA</div>
+            </header>
+
+            <section class="row g-4">
+                <!-- Ticket Form -->
+                <div class="col-lg-8">
+                    <div class="glass-panel p-4">
+                        <form id="ticketForm" novalidate>
+                            
+                            <!-- Subject -->
+                            <div class="mb-4">
+                                <label class="form-label small text-white-50">Ticket Subject</label>
+                                <input type="text" id="subject" class="form-control form-control-custom" placeholder="Brief summary of the issue (e.g., VPN login timeouts)" required>
+                                <div class="text-danger small mt-1" id="subjectError" style="display: none;">Ticket subject is required.</div>
+                            </div>
+
+                            <!-- Row: Category & Priority -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label small text-white-50">Category</label>
+                                    <select id="category" class="form-select form-control-custom" required>
+                                        <option value="" disabled selected>Select category...</option>
+                                        <option value="Hardware Support">Hardware Support</option>
+                                        <option value="Software Access">Software Access</option>
+                                        <option value="Billing & Invoices">Billing & Invoices</option>
+                                    </select>
+                                    <div class="text-danger small mt-1" id="categoryError" style="display: none;">Please select an issue category.</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small text-white-50">Priority</label>
+                                    <select id="priority" class="form-select form-control-custom" required>
+                                        <option value="low">Low Priority</option>
+                                        <option value="medium" selected>Medium Priority</option>
+                                        <option value="high">High Priority</option>
+                                        <option value="urgent">Urgent Priority</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label class="form-label small text-white-50">Problem Details</label>
+                                <textarea id="description" class="form-control form-control-custom" rows="5" placeholder="Provide detailed instructions to reproduce or list error details..." required></textarea>
+                                <div class="text-danger small mt-1" id="descriptionError" style="display: none;">Detailed description is required.</div>
+                            </div>
+
+                            <!-- File Uploader -->
+                            <div class="mb-4">
+                                <label class="form-label small text-white-50">Attachments (Max 15MB, PDF/PNG/JPG/DOCX)</label>
+                                <div class="dropzone" id="dropzone">
+                                    <i class="fa-solid fa-cloud-arrow-up fa-2xl text-secondary mb-3 d-block"></i>
+                                    <span class="small text-white-50">Drag files here or <span class="text-accent" style="color: var(--accent-blue);">click to select</span></span>
+                                    <input type="file" id="fileInput" multiple style="display: none;">
+                                </div>
+                                <ul class="list-unstyled mt-3 d-flex flex-column gap-2" id="fileList">
+                                    <!-- Injected files -->
+                                </ul>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-accent px-4" id="submitBtn">
+                                    <span id="btnText">Submit Ticket</span>
+                                </button>
+                                <a href="dashboard.html" class="btn btn-outline-light border-secondary px-4 text-white-50">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- KB Suggestions Panel -->
+                <div class="col-lg-4">
+                    <div class="glass-panel p-4" id="suggestionsPanel">
+                        <h3 class="h6 fw-bold text-white mb-3">Knowledge Base Recommendations</h3>
+                        <div class="text-secondary small" id="suggestionsPlaceholder">
+                            Start typing a query in the subject box to suggest articles.
+                        </div>
+                        <div class="d-flex flex-column gap-3 mt-3" id="articleList" style="display: none;">
+                            <div class="p-3 glass-card rounded-3 cursor-pointer article-card-proto" data-id="1">
+                                <div class="small fw-bold" style="color: var(--accent-blue);">Reset Corporate VPN Connection</div>
+                                <p class="text-secondary small mt-1 mb-0">Guide on clearing the Cisco AD credentials local cache files...</p>
+                            </div>
+                            <div class="p-3 glass-card rounded-3 cursor-pointer article-card-proto" data-id="2">
+                                <div class="small fw-bold" style="color: var(--accent-blue);">VPN Servers IP Directory</div>
+                                <p class="text-secondary small mt-1 mb-0">Complete list of global gateway locations and port configurations...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Article Detail Modal -->
+    <div class="modal fade" id="kbModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border border-secondary border-opacity-25" style="background: var(--bg-dark);">
+                <div class="modal-header border-bottom border-secondary border-opacity-10">
+                    <h5 class="modal-title fw-bold text-white" id="modalTitle">Article Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-secondary small" id="modalBody">
+                    <!-- Text injected dynamically -->
+                </div>
+                <div class="modal-footer border-top border-secondary border-opacity-10 d-flex justify-content-between">
+                    <span class="small fw-semibold text-white-50">Did this solve your request?</span>
+                    <div>
+                        <button type="button" class="btn btn-sm btn-success me-2" id="deflectBtn" data-bs-dismiss="modal">Yes, cancel request</button>
+                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('ticketForm');
+            const subjectInput = document.getElementById('subject');
+            const categorySelect = document.getElementById('category');
+            const descriptionText = document.getElementById('description');
+            
+            // Errors
+            const subjectError = document.getElementById('subjectError');
+            const categoryError = document.getElementById('categoryError');
+            const descriptionError = document.getElementById('descriptionError');
+
+            // Suggestions
+            const suggestionsPanel = document.getElementById('suggestionsPanel');
+            const suggestionsPlaceholder = document.getElementById('suggestionsPlaceholder');
+            const articleList = document.getElementById('articleList');
+
+            // Files upload
+            const dropzone = document.getElementById('dropzone');
+            const fileInput = document.getElementById('fileInput');
+            const fileListContainer = document.getElementById('fileList');
+            let uploadedFiles = [];
+
+            // Debounced KB search suggestion
+            let debounceTimer;
+            subjectInput.addEventListener('keyup', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    const query = subjectInput.value.toLowerCase();
+                    if (query.includes('vpn') || query.includes('access') || query.includes('login')) {
+                        suggestionsPlaceholder.style.display = 'none';
+                        articleList.style.display = 'flex';
+                    } else if (query.trim() === '') {
+                        suggestionsPlaceholder.style.display = 'block';
+                        articleList.style.display = 'none';
+                    }
+                }, 300);
+            });
+
+            // Article data mockup
+            const articleDetails = {
+                1: {
+                    title: "Reset Corporate VPN Connection",
+                    body: "1. Log into your SSO Dashboard (sso.company.com) using your standard domain password.<br>2. Select 'My Security Settings' and click 'Reset Active Directory Passwords'.<br>3. Open the Cisco AnyConnect VPN client, click 'Preferences', and delete the profile cache.<br>4. Re-enter the primary US-East server URL and attempt connection with the new password."
+                },
+                2: {
+                    title: "VPN Servers IP Directory",
+                    body: "Our primary global VPN gateways are configured as follows:<br><br>- <strong>US-East:</strong> vpn-east.company.com (IP: 10.200.4.1)<br>- <strong>US-West:</strong> vpn-west.company.com (IP: 10.200.5.1)<br>- <strong>EU-Central:</strong> vpn-eu.company.com (IP: 10.150.8.2)<br><br>Make sure you have active Multi-Factor Authentication (MFA) set up on your device before connecting."
+                }
+            };
+
+            // Modal hook helper
+            const modalObj = new bootstrap.Modal(document.getElementById('kbModal'));
+            document.querySelectorAll('.article-card-proto').forEach(card => {
+                card.addEventListener('click', () => {
+                    const artId = card.getAttribute('data-id');
+                    const art = articleDetails[artId];
+                    if (art) {
+                        document.getElementById('modalTitle').textContent = art.title;
+                        document.getElementById('modalBody').innerHTML = art.body;
+                        modalObj.show();
+                    }
+                });
+            });
+
+            // Deflection action
+            document.getElementById('deflectBtn').addEventListener('click', () => {
+                alert('Ticket deflection logged. Article feedback score incremented. Process cancelled.');
+                form.reset();
+                fileListContainer.innerHTML = '';
+                uploadedFiles = [];
+                suggestionsPlaceholder.style.display = 'block';
+                articleList.style.display = 'none';
+            });
+
+            // File dropzone click actions
+            dropzone.addEventListener('click', () => fileInput.click());
+
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('dragover');
+            });
+            dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                handleFiles(e.dataTransfer.files);
+            });
+            fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+
+            function handleFiles(files) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.size > 15 * 1024 * 1024) {
+                        alert(`File "${file.name}" exceeds 15MB limit.`);
+                        continue;
+                    }
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const whitelist = ['pdf', 'png', 'jpg', 'jpeg', 'docx'];
+                    if (!whitelist.includes(ext)) {
+                        alert(`File "${file.name}" invalid. PDF, PNG, JPG, JPEG, and DOCX permitted.`);
+                        continue;
+                    }
+                    uploadedFiles.push(file);
+                }
+                renderFiles();
+            }
+
+            function renderFiles() {
+                fileListContainer.innerHTML = '';
+                uploadedFiles.forEach((file, index) => {
+                    const item = document.createElement('li');
+                    item.className = 'd-flex justify-content-between align-items-center p-2 rounded bg-opacity-25 bg-secondary border border-secondary border-opacity-10 small text-white-50';
+                    item.innerHTML = `
+                        <span><i class="fa-solid fa-file-invoice me-2"></i>${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+                        <button type="button" class="btn-close btn-close-white remove-file-btn" data-idx="${index}" aria-label="Remove"></button>
+                    `;
+                    fileListContainer.appendChild(item);
+                });
+
+                document.querySelectorAll('.remove-file-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.getAttribute('data-idx'));
+                        uploadedFiles.splice(idx, 1);
+                        renderFiles();
+                    });
+                });
+            }
+
+            // Ticket Submission handler (pushing into localStorage state)
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                let valid = true;
+
+                if (subjectInput.value.trim() === '') {
+                    subjectError.style.display = 'block';
+                    subjectInput.style.borderColor = '#ef4444';
+                    valid = false;
+                } else {
+                    subjectError.style.display = 'none';
+                    subjectInput.style.borderColor = '';
+                }
+
+                if (categorySelect.value === '') {
+                    categoryError.style.display = 'block';
+                    categorySelect.style.borderColor = '#ef4444';
+                    valid = false;
+                } else {
+                    categoryError.style.display = 'none';
+                    categorySelect.style.borderColor = '';
+                }
+
+                if (descriptionText.value.trim() === '') {
+                    descriptionError.style.display = 'block';
+                    descriptionText.style.borderColor = '#ef4444';
+                    valid = false;
+                } else {
+                    descriptionError.style.display = 'none';
+                    descriptionText.style.borderColor = '';
+                }
+
+                if (!valid) return;
+
+                const submitBtn = document.getElementById('submitBtn');
+                const btnText = document.getElementById('btnText');
+                submitBtn.disabled = true;
+                btnText.innerHTML = 'Submitting Request... <span class="spinner-border spinner-border-sm ms-2"></span>';
+
+                // Add to global state
+                const newId = generateTicketId();
+                const newTicket = {
+                    id: newId,
+                    title: subjectInput.value,
+                    category: categorySelect.value,
+                    priority: document.getElementById('priority').value,
+                    status: 'new',
+                    requester: 'Alex Analyst (You)',
+                    agent: 'Unassigned',
+                    description: descriptionText.value,
+                    slaTimeRemaining: 1800, // 30 minutes
+                    created_at: new Date().toISOString()
+                };
+
+                tickets.push(newTicket);
+                localStorage.setItem('hd_tickets', JSON.stringify(tickets));
+
+                // Add baseline comments
+                comments[newId] = [
+                    { author: 'System Ingestion', text: 'Ticket submitted via portal. Assigned default target priority SLAs.', time: 'Just Now', isInternal: true }
+                ];
+                localStorage.setItem('hd_comments', JSON.stringify(comments));
+
+                setTimeout(() => {
+                    alert('Ticket submitted successfully! Routing to Dashboard...');
+                    window.location.href = 'dashboard.html';
+                }, 1200);
+            });
+        });
+    </script>
+</body>
+</html>

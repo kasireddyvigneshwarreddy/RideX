@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Agent Workspace Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Dashboard Layout Grid overrides */
+        body {
+            display: block;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: rgba(10, 16, 32, 0.85);
+            backdrop-filter: blur(12px);
+            border-right: 1px solid var(--border-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            z-index: 20;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-item.active a, .nav-item a:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: inset 3px 0 0 var(--accent-blue);
+        }
+
+        /* Main Workspace Container */
+        .workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px 40px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Section */
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 36px;
+        }
+
+        .search-bar {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 16px 10px 40px;
+            color: var(--text-primary);
+            outline: none;
+            font-family: var(--font-sans);
+            transition: var(--transition-smooth);
+        }
+
+        .search-bar input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 8px var(--accent-blue-glow);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: var(--transition-smooth);
+        }
+
+        .notification-bell:hover {
+            color: var(--text-primary);
+        }
+
+        .bell-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--error-color);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--error-color);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-purple);
+            box-shadow: 0 0 10px var(--accent-purple-glow);
+            background: #1e1b4b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* KPI Metric Cards Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 36px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: var(--transition-smooth);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .kpi-title {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .kpi-subtext {
+            font-size: 0.8rem;
+            color: var(--success-color);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Split Sections Layout */
+        .dashboard-split {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 28px;
+            margin-bottom: 36px;
+        }
+
+        .split-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-action-sm {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-action-sm:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        /* SLA warning row styles */
+        .sla-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sla-item {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+
+        .sla-item:hover {
+            border-color: var(--border-color);
+            background: rgba(15, 23, 42, 0.7);
+        }
+
+        .sla-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sla-ticket-id {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+        }
+
+        .sla-ticket-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .sla-timer {
+            font-family: monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error-color);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Queue status breakdown list */
+        .queue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .queue-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .queue-item:last-child {
+            border-bottom: none;
+        }
+
+        .queue-name {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .queue-count {
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+
+        /* Live Activity log panel */
+        .activity-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 28px;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            font-size: 0.9rem;
+        }
+
+        .activity-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-purple);
+            border-radius: 50%;
+            margin-top: 6px;
+            box-shadow: 0 0 6px var(--accent-purple);
+        }
+
+        .activity-time {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            min-width: 75px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient background glows -->
+    <div class="background-glow">
+        <div class="sphere sphere-1"></div>
+        <div class="sphere sphere-2"></div>
+    </div>
+
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                </svg>
+                <span>Help Desk Workspace</span>
+            </div>
+            
+            <nav style="flex: 1;">
+                <ul class="nav-menu">
+                    <li class="nav-item active">
+                        <a href="dashboard.html">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Tickets List
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                            Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            Knowledge Base
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <ul class="nav-menu" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 16px;">
+                <li class="nav-item">
+                    <a href="login.html">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Header -->
+            <section class="workspace-header">
+                <div class="search-bar">
+                    <span class="search-icon">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+                    </span>
+                    <input type="text" placeholder="Search incidents, categories...">
+                </div>
+
+                <div class="profile-section">
+                    <div class="notification-bell">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        <span class="bell-badge"></span>
+                    </div>
+                    <div class="user-avatar" title="Active Admin Agent">
+                        AA
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metrics grid -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <span class="kpi-title">Open Tickets</span>
+                    <span class="kpi-value" id="openCount">14</span>
+                    <span class="kpi-subtext" style="color: var(--success-color);">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        12% down this week
+                    </span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-title">Avg MTTR</span>
+                    <span class="kpi-value">2.4h</span>
+                    <span class="kpi-subtext" style="color: var(--success-color);">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        18m speed improvement
+                    </span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-title">SLA Compliance</span>
+                    <span class="kpi-value">96.8%</span>
+                    <span class="kpi-subtext" style="color: var(--success-color);">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        +1.4% higher target
+                    </span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-title">KB Deflection</span>
+                    <span class="kpi-value">22%</span>
+                    <span class="kpi-subtext" style="color: var(--success-color);">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                        240 tickets deflected
+                    </span>
+                </div>
+            </section>
+
+            <!-- Split panels -->
+            <section class="dashboard-split">
+                <!-- SLA Monitor panel -->
+                <div class="split-panel">
+                    <div class="panel-title">
+                        SLA Breach Warnings
+                        <span style="font-size: 0.8rem; color: var(--error-color); font-weight: 500;">Active Countdown</span>
+                    </div>
+                    <div class="sla-list" id="slaList">
+                        <!-- Warning Item 1 -->
+                        <div class="sla-item" id="sla-item-1">
+                            <div class="sla-meta">
+                                <span class="sla-ticket-id">INC-102 &bull; Software Access</span>
+                                <span class="sla-ticket-title">Cannot access VPN US-East Server</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="sla-timer" id="timer-1">11m 45s</div>
+                                <button class="btn-action-sm claim-btn" data-target="sla-item-1">Claim</button>
+                            </div>
+                        </div>
+
+                        <!-- Warning Item 2 -->
+                        <div class="sla-item" id="sla-item-2">
+                            <div class="sla-meta">
+                                <span class="sla-ticket-id">INC-492 &bull; Hardware Support</span>
+                                <span class="sla-ticket-title">Server screen failure at primary cluster</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="sla-timer" id="timer-2">21m 10s</div>
+                                <button class="btn-action-sm claim-btn" data-target="sla-item-2">Claim</button>
+                            </div>
+                        </div>
+
+                        <!-- Warning Item 3 -->
+                        <div class="sla-item" id="sla-item-3">
+                            <div class="sla-meta">
+                                <span class="sla-ticket-id">INC-281 &bull; Billing & Invoices</span>
+                                <span class="sla-ticket-title">Double subscription charge reported</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="sla-timer" id="timer-3" style="color: var(--accent-blue); border-color: rgba(0, 180, 255, 0.3); background: rgba(0, 180, 255, 0.1);">04h 12m</div>
+                                <button class="btn-action-sm claim-btn" data-target="sla-item-3">Claim</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Queue status panel -->
+                <div class="split-panel">
+                    <div class="panel-title">
+                        Assigned Queue Status
+                        <button class="btn-action-sm" onclick="alert('Queue configurations loaded')">Config</button>
+                    </div>
+                    <div class="queue-list">
+                        <div class="queue-item">
+                            <span class="queue-name">Hardware Queue</span>
+                            <span class="queue-count" style="border-left: 3px solid var(--accent-purple)">4 Open</span>
+                        </div>
+                        <div class="queue-item">
+                            <span class="queue-name">Software Access Queue</span>
+                            <span class="queue-count" style="border-left: 3px solid var(--accent-blue)">8 Open</span>
+                        </div>
+                        <div class="queue-item">
+                            <span class="queue-name">Billing & Finance Queue</span>
+                            <span class="queue-count" style="border-left: 3px solid var(--text-secondary)">2 Open</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Logs panel -->
+            <section class="activity-panel">
+                <div class="panel-title">Recent Activity Logs</div>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <span class="activity-time">09:12 AM</span>
+                        <div class="activity-dot"></div>
+                        <span>Agent <strong>Daniel D.</strong> self-assigned ticket <strong>INC-102</strong></span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">08:45 AM</span>
+                        <div class="activity-dot" style="background-color: var(--accent-blue); box-shadow: 0 0 6px var(--accent-blue-glow);"></div>
+                        <span>System auto-created <strong>INC-492</strong> from customer email ingestion</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">Yesterday</span>
+                        <div class="activity-dot" style="background-color: var(--success-color); box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);"></div>
+                        <span>Supervisor approved SLA draft rule: <strong>Network Operations 95% threshold</strong></span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Active JS Interactivity and Real-Time Timers -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Timer durations in seconds
+            let time1 = 11 * 60 + 45; // 11m 45s
+            let time2 = 21 * 60 + 10; // 21m 10s
+            let time3 = 4 * 3600 + 12 * 60; // 4h 12m
+
+            const timerElement1 = document.getElementById('timer-1');
+            const timerElement2 = document.getElementById('timer-2');
+            const timerElement3 = document.getElementById('timer-3');
+
+            // Format seconds to string helper
+            function formatTime(seconds, includeHours = false) {
+                if (includeHours) {
+                    const hrs = Math.floor(seconds / 3600);
+                    const mins = Math.floor((seconds % 3600) / 60);
+                    return `${hrs.toString().padStart(2, '0')}h ${mins.toString().padStart(2, '0')}m`;
+                } else {
+                    const mins = Math.floor(seconds / 60);
+                    const secs = seconds % 60;
+                    return `${mins.toString().padStart(2, '0')}m ${secs.toString().padStart(2, '0')}s`;
+                }
+            }
+
+            // Real-Time Countdown loop
+            const countdownInterval = setInterval(() => {
+                // Timer 1
+                if (time1 > 0) {
+                    time1--;
+                    timerElement1.textContent = formatTime(time1);
+                } else {
+                    timerElement1.textContent = "BREACHED";
+                    timerElement1.style.boxShadow = "0 0 10px rgba(239, 68, 68, 0.4)";
+                }
+
+                // Timer 2
+                if (time2 > 0) {
+                    time2--;
+                    timerElement2.textContent = formatTime(time2);
+                } else {
+                    timerElement2.textContent = "BREACHED";
+                }
+
+                // Timer 3
+                if (time3 > 0) {
+                    time3--;
+                    timerElement3.textContent = formatTime(time3, true);
+                }
+            }, 1000);
+
+            // Claim Ticket Interactions
+            const claimButtons = document.querySelectorAll('.claim-btn');
+            const openCount = document.getElementById('openCount');
+            const activityList = document.getElementById('activityList');
+
+            claimButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = btn.getAttribute('data-target');
+                    const targetItem = document.getElementById(targetId);
+                    const ticketIdStr = targetItem.querySelector('.sla-ticket-id').textContent.split(' ')[0];
+
+                    // Action confirm simulation
+                    if (confirm(`Claim ticket ${ticketIdStr} and assign it to yourself?`)) {
+                        // Decrease Open tickets count simulation
+                        let count = parseInt(openCount.textContent);
+                        openCount.textContent = count - 1;
+
+                        // Visual fadeout out of warnings
+                        targetItem.style.transition = "var(--transition-smooth)";
+                        targetItem.style.opacity = "0";
+                        targetItem.style.transform = "scale(0.9)";
+                        
+                        setTimeout(() => {
+                            targetItem.remove();
+                            // Append new log entry to recent activity list
+                            const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            const newLog = document.createElement('div');
+                            newLog.className = 'activity-item';
+                            newLog.innerHTML = `
+                                <span class="activity-time">${nowStr}</span>
+                                <div class="activity-dot"></div>
+                                <span>You self-assigned ticket <strong>${ticketIdStr}</strong></span>
+                            `;
+                            // Prepend new activity
+                            activityList.insertBefore(newLog, activityList.firstChild);
+                        }, 300);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

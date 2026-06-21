@@ -1,0 +1,5 @@
+{
+  "summary":  "A comprehensive test suite containing 30 functional test cases for the Help Desk System. Features tabular columns for Test Case ID, Functional Module, Scenario Steps, Expected Result, and Actual Result (Pending Execution). Covers Auth, Ingestion, SLA, KB, Reporting, and Audits.",
+  "updatedAt":  "2026-06-21T04:24:24.962597Z",
+  "userFacing":  true
+}

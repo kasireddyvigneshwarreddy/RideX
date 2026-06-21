@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Desk - Dashboard Console</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-section mb-4">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="me-2">
+                    <path d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="url(#logo-grad)"/>
+                </svg>
+                <span class="fs-6 fw-bold">Support Console</span>
+            </div>
+
+            <nav class="flex-grow-1">
+                <a href="dashboard.html" class="nav-link-custom active">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="ticket_list.html" class="nav-link-custom">
+                    <i class="fa-solid fa-list-check"></i> Tickets List
+                </a>
+                <a href="create_ticket.html" class="nav-link-custom">
+                    <i class="fa-solid fa-plus-circle"></i> Create Ticket
+                </a>
+                <a href="reports.html" class="nav-link-custom">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Reports
+                </a>
+            </nav>
+
+            <div class="pt-3 border-top border-secondary">
+                <a href="index.html" class="nav-link-custom text-danger">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 fw-bold text-white mb-1">Supervisor Dashboard</h1>
+                    <p class="text-secondary small">Real-time help desk operational metrics</p>
+                </div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="text-white-50 small">Admin Workspace</span>
+                    <div class="user-avatar text-white">AA</div>
+                </div>
+            </header>
+
+            <!-- Metrics Cards Grid -->
+            <section class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="glass-panel p-4">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-2">Open Incidents</div>
+                        <div class="h2 fw-bold text-white mb-2" id="openCount">14</div>
+                        <div class="small text-success"><i class="fa-solid fa-arrow-trend-down"></i> 12% lower than average</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel p-4">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-2">Average MTTR</div>
+                        <div class="h2 fw-bold text-white mb-2">2.4 hrs</div>
+                        <div class="small text-success"><i class="fa-solid fa-clock"></i> 18m speed improvement</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel p-4">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-2">SLA Compliance</div>
+                        <div class="h2 fw-bold text-white mb-2">96.8%</div>
+                        <div class="small text-success"><i class="fa-solid fa-check-circle"></i> +1.4% higher target</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="glass-panel p-4">
+                        <div class="text-secondary small text-uppercase fw-semibold mb-2">KB Deflection</div>
+                        <div class="h2 fw-bold text-white mb-2">22%</div>
+                        <div class="small text-success"><i class="fa-solid fa-shield-halved"></i> 240 deflections</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Splits -->
+            <section class="row g-4 mb-4">
+                <!-- SLA warnings panel -->
+                <div class="col-lg-8">
+                    <div class="glass-panel p-4 h-100">
+                        <h3 class="h6 fw-bold text-white mb-4 d-flex justify-content-between align-items-center">
+                            SLA Breach Warnings
+                            <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-20 small">Active Countdowns</span>
+                        </h3>
+                        <div id="slaList" class="d-flex flex-column gap-3">
+                            <!-- Items populated dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assigned status queues -->
+                <div class="col-lg-4">
+                    <div class="glass-panel p-4 h-100">
+                        <h3 class="h6 fw-bold text-white mb-4">Assigned Queue Status</h3>
+                        <div class="d-flex flex-column gap-3">
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                                <span class="text-secondary">Hardware Support Queue</span>
+                                <span class="badge bg-purple bg-opacity-10 text-white-50 border-start border-3 border-primary" style="padding: 6px 12px; border-left-color: var(--accent-purple) !important;">4 Open</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2 border-bottom border-secondary border-opacity-10">
+                                <span class="text-secondary">Software Access Queue</span>
+                                <span class="badge bg-blue bg-opacity-10 text-white-50 border-start border-3 border-primary" style="padding: 6px 12px; border-left-color: var(--accent-blue) !important;">8 Open</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center py-2">
+                                <span class="text-secondary">Billing & Finance Queue</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-white-50 border-start border-3 border-secondary" style="padding: 6px 12px;">2 Open</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent activity logs -->
+            <section class="glass-panel p-4">
+                <h3 class="h6 fw-bold text-white mb-4">Recent Activity Logs</h3>
+                <div class="d-flex flex-column gap-3" id="activityFeed">
+                    <div class="d-flex gap-3 align-items-start small">
+                        <span class="text-secondary" style="min-width: 75px;">09:12 AM</span>
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-purple); box-shadow: 0 0 6px var(--accent-purple); margin-top: 6px;"></span>
+                        <span>Agent <strong>Daniel D.</strong> self-assigned ticket <strong>INC-102</strong></span>
+                    </div>
+                    <div class="d-flex gap-3 align-items-start small">
+                        <span class="text-secondary" style="min-width: 75px;">08:45 AM</span>
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-blue); box-shadow: 0 0 6px var(--accent-blue); margin-top: 6px;"></span>
+                        <span>System auto-created <strong>INC-492</strong> from customer email ingestion</span>
+                    </div>
+                    <div class="d-flex gap-3 align-items-start small">
+                        <span class="text-secondary" style="min-width: 75px;">Yesterday</span>
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; margin-top: 6px;"></span>
+                        <span>Supervisor approved SLA draft rule: <strong>Network Operations 95% threshold</strong></span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Update countdown displays dynamically using script.js data
+        function updateSlaTimersInUI() {
+            const slaList = document.getElementById('slaList');
+            if (!slaList) return;
+
+            // Find tickets needing timers
+            const timerTickets = tickets.filter(t => t.status !== 'resolved' && t.status !== 'closed' && t.status !== 'pending' && t.slaTimeRemaining !== null);
+            
+            // Build inner HTML for list
+            let html = '';
+            timerTickets.forEach(ticket => {
+                const badgeColor = ticket.priority === 'urgent' ? 'danger' : 'warning';
+                const isBreached = ticket.slaTimeRemaining <= 0;
+                const timerText = isBreached ? 'BREACHED' : formatSlaDuration(ticket.slaTimeRemaining);
+                
+                html += `
+                    <div class="d-flex justify-content-between align-items-center p-3 glass-card rounded-3" id="sla-row-${ticket.id}">
+                        <div>
+                            <div class="small fw-bold text-accent-blue" style="color: var(--accent-blue);">${ticket.id} &bull; ${ticket.category}</div>
+                            <div class="text-white-50 mt-1">${ticket.title}</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="badge bg-${badgeColor} text-white font-monospace p-2 border border-${badgeColor} border-opacity-35">${timerText}</span>
+                            <button class="btn btn-sm btn-outline-light border-secondary claim-btn-proto" data-id="${ticket.id}">Claim</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (html === '') {
+                html = '<div class="text-secondary small text-center py-4">No active SLA warning incidents.</div>';
+            }
+            slaList.innerHTML = html;
+
+            // Hook claim button click event listeners
+            document.querySelectorAll('.claim-btn-proto').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const ticketId = btn.getAttribute('data-id');
+                    claimTicketFromUI(ticketId);
+                });
+            });
+        }
+
+        // Action when user clicks claim ticket
+        function claimTicketFromUI(ticketId) {
+            if (confirm(`Claim ticket ${ticketId} and self-assign to your account?`)) {
+                // Find ticket and update properties
+                const idx = tickets.findIndex(t => t.id === ticketId);
+                if (idx !== -1) {
+                    tickets[idx].status = 'open';
+                    tickets[idx].agent = 'Alex Analyst (You)';
+                    tickets[idx].slaTimeRemaining = null; // Pause/stop warnings
+                    localStorage.setItem('hd_tickets', JSON.stringify(tickets));
+
+                    // Add new activity item log
+                    const feed = document.getElementById('activityFeed');
+                    const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const newLog = document.createElement('div');
+                    newLog.className = 'd-flex gap-3 align-items-start small';
+                    newLog.innerHTML = `
+                        <span class="text-secondary" style="min-width: 75px;">${nowStr}</span>
+                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 6px #22c55e; margin-top: 6px;"></span>
+                        <span>You self-assigned ticket <strong>${ticketId}</strong></span>
+                    `;
+                    feed.insertBefore(newLog, feed.firstChild);
+
+                    // Update metrics count
+                    const openCount = document.getElementById('openCount');
+                    const currentCount = parseInt(openCount.textContent);
+                    openCount.textContent = currentCount - 1;
+
+                    // Re-render warnings list
+                    updateSlaTimersInUI();
+                }
+            }
+        }
+
+        // Initialize display
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSlaTimersInUI();
+            
+            // Sync overall open count calculation
+            const openCount = document.getElementById('openCount');
+            const activeTickets = tickets.filter(t => t.status === 'new' || t.status === 'open' || t.status === 'pending');
+            openCount.textContent = activeTickets.length;
+        });
+    </script>
+</body>
+</html>

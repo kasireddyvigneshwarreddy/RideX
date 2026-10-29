@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" width="240" height="60">
+  <defs>
+    <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE033" />
+      <stop offset="100%" stop-color="#FFB800" />
+    </linearGradient>
+    <linearGradient id="darkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2A2A2A" />
+      <stop offset="100%" stop-color="#121212" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon Badge -->
+  <rect x="6" y="6" width="48" height="48" rx="14" fill="url(#darkGrad)" stroke="#FFD500" stroke-width="2.5" />
+  
+  <!-- Speed Path / Bike Lightning -->
+  <path d="M22 36 L30 16 L38 24 L28 44 Z" fill="url(#yellowGrad)" />
+  <circle cx="34" cy="22" r="3.5" fill="#151515" />
+  <path d="M34 27 L44 38 L38 41 L30 32 Z" fill="#FFFFFF" />
+  
+  <!-- Wordmark "RideX" -->
+  <text x="64" y="42" font-family="'Outfit', sans-serif" font-size="34" font-weight="900" fill="#151515" letter-spacing="-1">
+    Ride<tspan fill="#FFB800">X</tspan>
+  </text>
+  
+  <!-- Mobility Tagline Tag -->
+  <rect x="156" y="24" width="60" height="18" rx="5" fill="#FFD500" />
+  <text x="186" y="37" font-family="'Plus Jakarta Sans', sans-serif" font-size="9" font-weight="800" fill="#151515" text-anchor="middle" letter-spacing="1">
+    INDIA
+  </text>
+</svg>

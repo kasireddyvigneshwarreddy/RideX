@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default: Rapido-inspired Yellow and Black */
+  --color-primary: #FFD500;
+  --color-primary-hover: #E6C000;
+  --color-primary-light: #FFF8D6;
+  --color-secondary: #151515;
+  --color-bg: #F8F9FA;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F1F3F5;
+  --color-border: #E5E7EB;
+  --color-text: #111827;
+  --color-text-muted: #6B7280;
+  --color-accent: #10B981;
+}
+
+/* Theme 1: Rapido Yellow & Dark */
+[data-theme="rapido-yellow"] {
+  --color-primary: #FFD500;
+  --color-primary-hover: #E6C000;
+  --color-primary-light: #FFF8D6;
+  --color-secondary: #151515;
+  --color-bg: #FAFAFA;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F4F4F5;
+  --color-border: #E4E4E7;
+  --color-text: #18181B;
+  --color-text-muted: #71717A;
+  --color-accent: #10B981;
+}
+
+/* Theme 2: Ocean Blue & White */
+[data-theme="ocean-blue"] {
+  --color-primary: #0284C7;
+  --color-primary-hover: #0369A1;
+  --color-primary-light: #E0F2FE;
+  --color-secondary: #0F172A;
+  --color-bg: #F0F9FF;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F1F5F9;
+  --color-border: #BAE6FD;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+  --color-accent: #38BDF8;
+}
+
+/* Theme 3: Emerald Green & Cream */
+[data-theme="emerald-green"] {
+  --color-primary: #059669;
+  --color-primary-hover: #047857;
+  --color-primary-light: #D1FAE5;
+  --color-secondary: #064E3B;
+  --color-bg: #F7FBF8;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #ECFDF5;
+  --color-border: #A7F3D0;
+  --color-text: #064E3B;
+  --color-text-muted: #4B5563;
+  --color-accent: #10B981;
+}
+
+/* Theme 4: Midnight Purple & Dark Gray */
+[data-theme="midnight-purple"] {
+  --color-primary: #8B5CF6;
+  --color-primary-hover: #7C3AED;
+  --color-primary-light: #EDE9FE;
+  --color-secondary: #1E1035;
+  --color-bg: #0F0A1A;
+  --color-surface: #1B1429;
+  --color-surface-hover: #261D3A;
+  --color-border: #3B2D59;
+  --color-text: #F3EEFF;
+  --color-text-muted: #A79BC2;
+  --color-accent: #C084FC;
+}
+
+/* Theme 5: Sunset Orange & White */
+[data-theme="sunset-orange"] {
+  --color-primary: #F97316;
+  --color-primary-hover: #EA580C;
+  --color-primary-light: #FFEDD5;
+  --color-secondary: #1C1917;
+  --color-bg: #FFF7ED;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #FED7AA;
+  --color-border: #FDBA74;
+  --color-text: #1C1917;
+  --color-text-muted: #78716C;
+  --color-accent: #EF4444;
+}
+
+/* Theme 6: Premium Dark Mode */
+[data-theme="premium-dark"] {
+  --color-primary: #FFD500;
+  --color-primary-hover: #FFDF33;
+  --color-primary-light: #2A2400;
+  --color-secondary: #FFFFFF;
+  --color-bg: #0D0D0D;
+  --color-surface: #171717;
+  --color-surface-hover: #232323;
+  --color-border: #2E2E2E;
+  --color-text: #F4F4F5;
+  --color-text-muted: #A1A1AA;
+  --color-accent: #34D399;
+}
+
+/* Theme 7: Minimal Light Mode */
+[data-theme="minimal-light"] {
+  --color-primary: #0D9488;
+  --color-primary-hover: #0F766E;
+  --color-primary-light: #CCFBF1;
+  --color-secondary: #134E4A;
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-surface-hover: #F1F5F9;
+  --color-border: #E2E8F0;
+  --color-text: #0F172A;
+  --color-text-muted: #64748B;
+  --color-accent: #14B8A6;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.reduced-motion * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Leaflet map fix and styling */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  font-family: inherit;
+  border-radius: inherit;
+}
+
+.custom-bike-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}

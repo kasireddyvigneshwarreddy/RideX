@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const driverController_js_1 = require("../controllers/driverController.js");
+const auth_js_1 = require("../middleware/auth.js");
+const router = (0, express_1.Router)();
+router.use(auth_js_1.requireAuth);
+router.use((0, auth_js_1.requireRole)('DRIVER'));
+router.get('/requests', driverController_js_1.getPendingRequests);
+router.post('/rides/:id/accept', driverController_js_1.acceptRide);
+router.patch('/rides/:id/status', driverController_js_1.updateRideStatus);
+router.patch('/availability', driverController_js_1.toggleAvailability);
+router.get('/earnings', driverController_js_1.getEarnings);
+exports.default = router;

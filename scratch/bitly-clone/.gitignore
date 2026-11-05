@@ -1,0 +1,4 @@
+/bitly-local-db.mv.db
+/bitly-local-db.trace.db
+/bitly-local-db.lock.db
+/bitly-local-db.temp.db

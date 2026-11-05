@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
+import { getApiErrorMessage } from '../api/getApiErrorMessage';
 import { useToast } from '../context/ToastContext';
 import { Link, Calendar, Hash, Type } from 'lucide-react';
 
@@ -47,9 +48,8 @@ export const UrlShortenerForm: React.FC<UrlShortenerFormProps> = ({ onSuccess })
       
       // Refresh URL list
       onSuccess();
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to shorten URL';
-      showToast(message, 'error');
+    } catch (error) {
+      showToast(getApiErrorMessage(error, 'Failed to shorten URL'), 'error');
     } finally {
       setIsSubmitting(false);
     }

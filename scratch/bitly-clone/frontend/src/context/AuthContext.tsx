@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../api/axios';
+import { getApiErrorMessage } from '../api/getApiErrorMessage';
 import { useToast } from './ToastContext';
 
 interface UserProfile {
@@ -56,9 +57,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser({ name, email: userEmail });
       setIsAuthenticated(true);
       showToast('Logged in successfully', 'success');
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Invalid email or password';
-      showToast(message, 'error');
+    } catch (error) {
+      showToast(getApiErrorMessage(error, 'Invalid email or password'), 'error');
       throw error;
     }
   };
@@ -67,12 +67,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await api.post('/auth/register', { name, email, password });
       showToast('Registration successful! Please login.', 'success');
-    } catch (error: any) {
-      const errors = error.response?.data;
-      const message = typeof errors === 'object' 
-        ? Object.values(errors).join(', ') 
-        : errors?.message || 'Registration failed';
-      showToast(message, 'error');
+    } catch (error) {
+      showToast(getApiErrorMessage(error, 'Registration failed'), 'error');
       throw error;
     }
   };

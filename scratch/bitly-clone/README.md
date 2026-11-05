@@ -113,12 +113,8 @@ bitly-clone
 ## ⚙️ Running Locally (Without Docker)
 
 ### 1. Database Setup
-* Ensure MySQL is running on `localhost:3306`.
-* Create a database called `bitly_db`:
-  ```sql
-  CREATE DATABASE bitly_db;
-  ```
-* Set your database credentials in `src/main/resources/application.properties` (defaults are `root` / `root`).
+* No separate database is required for local development. The backend uses a persistent H2 database by default.
+* To use MySQL instead, set `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, and `SPRING_DATASOURCE_PASSWORD` before starting the backend.
 
 ### 2. Launch the Backend
 ```bash
@@ -142,7 +138,7 @@ npm run dev
 
 ---
 
-## 🐳 Running with Docker (Recommended)
+## 🐳 Running with Docker (MySQL)
 
 To spin up all services (MySQL, Backend, Frontend) with a single command:
 ```bash
